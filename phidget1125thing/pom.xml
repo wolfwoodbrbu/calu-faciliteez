@@ -1,0 +1,196 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.calu.faciliteez</groupId>
+  <artifactId>phidget1125thing</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>phidget1125thing</name>
+  <url>http://code.google.com/p/calu-faciliteez/</url>
+
+    <properties>
+        <!-- Should be ptcmanaged.com-->
+        <mainClass>com.calu.faciliteez.phidget1125thing.App</mainClass>
+
+        <!-- This is the full url to connect to your Thingworx server instance.  -->
+        <!-- If your server used http then the url should start with ws: otherwise if using -->
+        <!-- https it should start with wss: -->
+        <thingworxServer>ws://54.165.174.86:80/Thingworx/WS</thingworxServer>
+
+        <!-- You must generate an application key in your thingworx instance and copy it here -->
+        <applicationKey>bbfad036-5ae4-47df-9cc5-99b2d130bd51</applicationKey>
+
+        <!-- Replace raspberrypi with the hostname or ip address of your raspberry pi -->
+        <pi.deployment.url>scp://pi@76.125.168.99/home/pi</pi.deployment.url>
+
+        <!-- Change to no or empty to use real hardware -->
+        <simulated>simulated</simulated>
+    </properties>
+
+    <!-- This section adds the maven repository that contains the Thingworx jar -->
+    <!-- If you cannot access this repository, download your own copy and use the -->
+    <!-- bin/install-thingworx-jar.sh script to install it locally -->
+    <repositories>
+        <repository>
+            <id>ptc-managed-services-public</id>
+            <name>PTC Managed Services Public</name>
+            <url>https://maker01.ptcmanaged.com/mvnrepo</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
+    <!-- This section is used to specify the hostname for your raspberry pi -->
+    <!-- Edit this value in the properties section above -->
+    <distributionManagement>
+        <repository>
+            <id>pi</id>
+            <name>raspberry pi</name>
+            <url>${pi.deployment.url}</url>
+        </repository>
+    </distributionManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.0.13</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.0.13</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.0.19.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>com.thingworxs</groupId>
+            <artifactId>thingworx-common</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+
+        <!-- Junit -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.4</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <extensions>
+            <!-- Required to support delivery of the jar to your PI for testing -->
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>1.0</version>
+            </extension>
+        </extensions>
+
+        <plugins>
+
+            <!-- Disable the normal behavior of deploy so that the target will be the raspberry pi -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+
+            <!-- Use wagon to deliver the finished jar to your raspberry pi -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>wagon-maven-plugin</artifactId>
+                <version>1.0-beta-5</version>
+                <configuration>
+                    <serverId>pi</serverId>
+                    <fromFile>${project.build.directory}/${project.artifactId}-jar-with-dependencies.jar</fromFile>
+                    <url>${pi.deployment.url}</url>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>upload-to-pi</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>upload-single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Maven can execute this project from the command line with mvn exec:java -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <configuration>
+                    <mainClass>${mainClass}</mainClass>
+                    <arguments>
+                        <argument>${thingworxServer}</argument>
+                        <argument>${applicationKey}</argument>
+                        <argument>${simulated}</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+
+            <!-- JDK 7 is recommended for this project. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+
+            <!-- Builds an executable jar including all dependencies when you run mvn package -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <finalName>${project.artifactId}</finalName>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>${mainClass}</mainClass>
+                        </manifest>
+                    </archive>
+
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>simple-command</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attached</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
