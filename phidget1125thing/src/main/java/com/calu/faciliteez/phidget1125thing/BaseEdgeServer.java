@@ -4,8 +4,10 @@ import com.thingworx.common.RESTAPIConstants;
 import com.thingworx.communications.client.ClientConfigurator;
 import com.thingworx.communications.client.ConnectedThingClient;
 import com.thingworx.communications.client.things.VirtualThing;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
@@ -22,7 +24,8 @@ import sun.misc.SignalHandler;
 public abstract class BaseEdgeServer {
     private static final Logger LOG = LoggerFactory.getLogger(BaseEdgeServer.class);
     public static final int POLLING_INTERVAL_MILLISECONDS = 5000;
-    protected static SignalHandler oldSigTERM;
+    @SuppressWarnings("restriction")
+	protected static SignalHandler oldSigTERM;
     protected static ConnectedThingClient client;
     protected static String address;
     protected static String appKey;
@@ -80,7 +83,8 @@ public abstract class BaseEdgeServer {
     /**
      * Attach client disconnect handlers for when the program gets a signal to stop running.
      */
-    protected static void attachClientShutdownToSigTerm() {
+    @SuppressWarnings("restriction")
+	protected static void attachClientShutdownToSigTerm() {
         oldSigTERM = Signal.handle(new Signal("TERM"),
                 new SignalHandler() {
                     public void handle(Signal signal) {
