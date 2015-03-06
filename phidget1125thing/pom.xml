@@ -12,7 +12,7 @@
 
     <properties>
         <!-- Should be ptcmanaged.com-->
-        <mainClass>com.calu.faciliteez.phidget1125thing.App</mainClass>
+        <mainClass>com.calu.faciliteez.phidget1125thing.Main</mainClass>
 
         <!-- This is the full url to connect to your Thingworx server instance.  -->
         <!-- If your server used http then the url should start with ws: otherwise if using -->
@@ -20,10 +20,10 @@
         <thingworxServer>ws://54.165.174.86:80/Thingworx/WS</thingworxServer>
 
         <!-- You must generate an application key in your thingworx instance and copy it here -->
-        <applicationKey>bbfad036-5ae4-47df-9cc5-99b2d130bd51</applicationKey>
+        <applicationKey>e8aa5e4e-0dfb-4921-9957-22a60e7ddb71</applicationKey>
 
         <!-- Replace raspberrypi with the hostname or ip address of your raspberry pi -->
-        <pi.deployment.url>scp://pi@158.83.150.75/home/pi</pi.deployment.url>
+        <pi.deployment.url>scp://pi@76.125.168.99/home/pi</pi.deployment.url>
 
         <!-- Change to no or empty to use real hardware -->
         <simulated>simulated</simulated>
@@ -96,13 +96,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-        	<groupId>phidget21</groupId>
-        	<artifactId>phidget21</artifactId>
-        	<version>1.0</version>
-        	<systemPath>${basedir}\src\lib\phidget21.jar</systemPath>
-        	<scope>system</scope>
-        </dependency>
     </dependencies>
 
     <build>

@@ -27,7 +27,7 @@ public class SensorThing extends VirtualThing {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOG = LoggerFactory.getLogger(App.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
 	private final String name;
 	private final String description;
@@ -44,7 +44,7 @@ public class SensorThing extends VirtualThing {
 	 */
 	public SensorThing(String name, String description, String simulated,
 			ConnectedThingClient client) throws Exception {
-		super();
+		super(name, description, client);
 		this.name = name;
 		this.description = description;
 		this.simulated = simulated;
@@ -108,7 +108,11 @@ public class SensorThing extends VirtualThing {
 				e.printStackTrace();
 			}
 		}
-
+		humidity = humidity * 100;
+		Long l = Math.round(humidity);
+		humidity = l.doubleValue();
+		humidity = humidity / 100;
+		
 		return humidity;
 	}
 
@@ -129,6 +133,11 @@ public class SensorThing extends VirtualThing {
 				e.printStackTrace();
 			}
 		}
+		temperature = temperature * 100;
+		Long l = Math.round(temperature);
+		temperature = l.doubleValue();
+		temperature = temperature / 100;
+		
 		return temperature;
 	}
 
