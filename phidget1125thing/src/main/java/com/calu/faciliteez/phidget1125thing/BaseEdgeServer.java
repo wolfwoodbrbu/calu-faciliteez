@@ -23,7 +23,7 @@ import sun.misc.SignalHandler;
  */
 public abstract class BaseEdgeServer {
     private static final Logger LOG = LoggerFactory.getLogger(BaseEdgeServer.class);
-    public static final int POLLING_INTERVAL_MILLISECONDS = 5000;
+    public static final int POLLING_INTERVAL_MILLISECONDS = 10000;
     @SuppressWarnings("restriction")
 	protected static SignalHandler oldSigTERM;
     protected static ConnectedThingClient client;

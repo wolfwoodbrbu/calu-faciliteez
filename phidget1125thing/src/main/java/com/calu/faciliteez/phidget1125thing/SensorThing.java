@@ -130,8 +130,8 @@ public class SensorThing extends VirtualThing {
 		LOG.debug("P1125_TempScale = " + TempScale);
 		Double currentTemperatureF = getTemperature(TempScale);
 		Double currentHumidity = getHumidity();
-		LOG.debug("P1125_Temp" + "=" + currentTemperatureF);
-		LOG.debug("P1125_RH" + "=" + currentHumidity);
+		LOG.debug("P1125_Temp " + "= " + currentTemperatureF);
+		LOG.debug("P1125_RH   " + "= " + currentHumidity);
 		setProperty("P1125_Temp", currentTemperatureF);
 		setProperty("P1125_RH", currentHumidity);
 		updateSubscribedProperties(2000);
@@ -147,7 +147,7 @@ public class SensorThing extends VirtualThing {
 		if (simulated != null && simulated.equals("simulated")) {
 			sensorValue = 319;
 		} else {
-			sensorValue = getSensorValue(0);
+			sensorValue = getSensorValue(1);
 		}
 		humidity = new BigDecimal(sensorValue);
 
@@ -168,7 +168,7 @@ public class SensorThing extends VirtualThing {
 		if (simulated != null && simulated.equals("simulated")) {
 			sensorValue = 319;
 		} else {
-			sensorValue = getSensorValue(1);
+			sensorValue = getSensorValue(0);
 		}
 		temperature = new BigDecimal(sensorValue);
 
