@@ -27,16 +27,17 @@ import com.phidgets.Phidget;
  * 
  * @author Phidgets Inc.
  */
-public class TemperatureChangeEvent
-{
+public class TemperatureChangeEvent {
 	Phidget source;
 	int index;
 	double value;
 
 	/**
-	 * Class constructor. This is called internally by the phidget library when creating this event.
+	 * Class constructor. This is called internally by the phidget library when
+	 * creating this event.
 	 * 
-	 * @param source the Phidget object from which this event originated
+	 * @param source
+	 *            the Phidget object from which this event originated
 	 */
 	public TemperatureChangeEvent(Phidget source, int index, double value) {
 		this.source = source;
@@ -45,9 +46,10 @@ public class TemperatureChangeEvent
 	}
 
 	/**
-	 * Returns the source Phidget of this event. This is a reference to the Phidget object from which this
-	 * event was called. This object can be cast into a specific type of Phidget object to call specific
-	 * device calls on it.
+	 * Returns the source Phidget of this event. This is a reference to the
+	 * Phidget object from which this event was called. This object can be cast
+	 * into a specific type of Phidget object to call specific device calls on
+	 * it.
 	 * 
 	 * @return the event caller
 	 */
@@ -56,8 +58,9 @@ public class TemperatureChangeEvent
 	}
 
 	/**
-	 * Returns the index of the temperature sensor. An index of 0 indicated the Cold Juction Temperature sensing IC.
-	 * An index of 1 indicated the thermocouple.
+	 * Returns the index of the temperature sensor. An index of 0 indicated the
+	 * Cold Juction Temperature sensing IC. An index of 1 indicated the
+	 * thermocouple.
 	 * 
 	 * @return the index of the sensor
 	 */
@@ -81,6 +84,6 @@ public class TemperatureChangeEvent
 	 */
 	public String toString() {
 		return source.toString() + " Temperature " + index + " changed to "
-		  + value;
+				+ value;
 	}
 }

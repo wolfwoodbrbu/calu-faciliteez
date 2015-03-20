@@ -21,17 +21,17 @@
 package com.phidgets.event;
 
 /**
- * This interface represents a ErrorEvent. This event originates from all Phidgets.
- * It is used for asynchronous error handling.
+ * This interface represents a ErrorEvent. This event originates from all
+ * Phidgets. It is used for asynchronous error handling.
  * 
  * @author Phidgets Inc.
  */
-public interface ErrorListener
-{
+public interface ErrorListener {
 	/**
 	 * This method is called with the event data when a new event arrives.
 	 * 
-	 * @param ae the event data object containing event data
+	 * @param ae
+	 *            the event data object containing event data
 	 */
 	public void error(ErrorEvent ae);
 }

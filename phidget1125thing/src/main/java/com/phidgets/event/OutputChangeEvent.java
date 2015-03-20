@@ -27,16 +27,17 @@ import com.phidgets.Phidget;
  * 
  * @author Phidgets Inc.
  */
-public class OutputChangeEvent
-{
+public class OutputChangeEvent {
 	Phidget source;
 	int index;
 	boolean state;
 
 	/**
-	 * Class constructor. This is called internally by the phidget library when creating this event.
+	 * Class constructor. This is called internally by the phidget library when
+	 * creating this event.
 	 * 
-	 * @param source the Phidget object from which this event originated
+	 * @param source
+	 *            the Phidget object from which this event originated
 	 */
 	public OutputChangeEvent(Phidget source, int index, boolean state) {
 		this.source = source;
@@ -45,9 +46,10 @@ public class OutputChangeEvent
 	}
 
 	/**
-	 * Returns the source Phidget of this event. This is a reference to the Phidget object from which this
-	 * event was called. This object can be cast into a specific type of Phidget object to call specific
-	 * device calls on it.
+	 * Returns the source Phidget of this event. This is a reference to the
+	 * Phidget object from which this event was called. This object can be cast
+	 * into a specific type of Phidget object to call specific device calls on
+	 * it.
 	 * 
 	 * @return the event caller
 	 */
@@ -65,7 +67,8 @@ public class OutputChangeEvent
 	}
 
 	/**
-	 * Returns the state of the output. True indicated that the output is active, False indicated the default inactive state.
+	 * Returns the state of the output. True indicated that the output is
+	 * active, False indicated the default inactive state.
 	 * 
 	 * @return the state of the output
 	 */
@@ -79,7 +82,6 @@ public class OutputChangeEvent
 	 * @return an informative event string
 	 */
 	public String toString() {
-		return source.toString() + " output " + index + " changed to "
-		  + state;
+		return source.toString() + " output " + index + " changed to " + state;
 	}
 }

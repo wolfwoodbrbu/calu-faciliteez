@@ -18,56 +18,24 @@ import com.thingworx.types.properties.collections.PendingPropertyUpdatesByProper
 @ThingworxPropertyDefinitions(
 
 properties = {
-		@ThingworxPropertyDefinition(
-				name = "P1125_Temp", 
-				description = "The current temperature of the Phidget 1125 sensor", 
-				baseType = "NUMBER", 
-				aspects = {
-						"dataChangeType:ALWAYS", 
-						"dataChangeThreshold:0",
-						"cacheTime:0", 
-						"isPersistent:FALSE", 
-						"isReadOnly:TRUE",
-						"pushType:VALUE", 
-						"defaultValue:0" 
-						}
-				),
-		@ThingworxPropertyDefinition(
-				name = "P1125_RH", 
-				description = "The current relative humidity of the Phidget 1125 sensor", 
-				baseType = "NUMBER", 
-				aspects = {
-						"dataChangeType:ALWAYS", 
-						"dataChangeThreshold:0",
-						"cacheTime:0", 
-						"isPersistent:FALSE", 
-						"isReadOnly:TRUE",
-						"pushType:VALUE", 
-						"defaultValue:0" 
-						}
-				), 
-		@ThingworxPropertyDefinition(
-				name = "P1125_TempScale", 
-				description = "Which Temperature Scale do we want.", 
-				baseType = "STRING", 
-				aspects = {
-						"dataChangeType:ALWAYS", 
-						"dataChangeThreshold:0",
-						"cacheTime:0", 
-						"isPersistent:TRUE", 
-						"isReadOnly:FALSE",
-						"pushType:VALUE", 
-						"defaultValue:F" 
-						}
-				),
-})
-
+		@ThingworxPropertyDefinition(name = "P1125_Temp", description = "The current temperature of the Phidget 1125 sensor", baseType = "NUMBER", aspects = {
+				"dataChangeType:ALWAYS", "dataChangeThreshold:0",
+				"cacheTime:0", "isPersistent:FALSE", "isReadOnly:TRUE",
+				"pushType:VALUE", "defaultValue:0" }),
+		@ThingworxPropertyDefinition(name = "P1125_RH", description = "The current relative humidity of the Phidget 1125 sensor", baseType = "NUMBER", aspects = {
+				"dataChangeType:ALWAYS", "dataChangeThreshold:0",
+				"cacheTime:0", "isPersistent:FALSE", "isReadOnly:TRUE",
+				"pushType:VALUE", "defaultValue:0" }),
+		@ThingworxPropertyDefinition(name = "P1125_TempScale", description = "Which Temperature Scale do we want.", baseType = "STRING", aspects = {
+				"dataChangeType:ALWAYS", "dataChangeThreshold:0",
+				"cacheTime:0", "isPersistent:TRUE", "isReadOnly:FALSE",
+				"pushType:VALUE", "defaultValue:F" }), })
 public class SensorThing extends VirtualThing {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 7413736479873474805L;
 	private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
 	private final String name;
@@ -123,7 +91,7 @@ public class SensorThing extends VirtualThing {
 	@Override
 	public void processScanRequest() throws Exception {
 		super.processScanRequest();
-		
+
 		PendingPropertyUpdatesByProperty pu = getPendingPropertyUpdates();
 		Property Scale = getProperty("P1125_TempScale");
 		String TempScale = Scale.getValue().getStringValue();
@@ -180,8 +148,7 @@ public class SensorThing extends VirtualThing {
 			temperature = temperature.divide(new BigDecimal(5));
 			temperature = temperature.add(new BigDecimal(32));
 		}
-		
-		
+
 		temperature = round(temperature, 2);
 
 		return temperature.doubleValue();

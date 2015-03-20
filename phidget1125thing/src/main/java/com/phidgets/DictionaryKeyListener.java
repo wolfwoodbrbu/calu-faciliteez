@@ -29,45 +29,35 @@ import java.util.LinkedList;
 /**
  * This class represents a key listener.
  * <p>
- * This key listener is used, along with the Dictionary object, to set up listener for specific keys, or groups of keys.
- * Events are available for key add or change, and for key removal.
+ * This key listener is used, along with the Dictionary object, to set up
+ * listener for specific keys, or groups of keys. Events are available for key
+ * add or change, and for key removal.
  */
-public class DictionaryKeyListener
-{
+public class DictionaryKeyListener {
 	private String pattern;
 	Dictionary dict;
 
-	static
-	{
-		try
-		{
+	static {
+		try {
 			System.loadLibrary("phidget21");
-		}
-		catch(UnsatisfiedLinkError ex)
-		{
+		} catch (UnsatisfiedLinkError ex) {
 			String os = System.getProperty("os.name");
-			if(os.startsWith("Linux"))
-			{
+			if (os.startsWith("Linux")) {
+				throw new ExceptionInInitializerError(
+						ex.getMessage()
+								+ "\nCould not locate the Phidget C library."
+								+ "\nMake sure to compile with 'make jni' and install with 'make install'.");
+			} else if (os.startsWith("Windows")) {
 				throw new ExceptionInInitializerError(ex.getMessage()
-				+"\nCould not locate the Phidget C library."
-				+"\nMake sure to compile with 'make jni' and install with 'make install'.");
-			}
-			else if(os.startsWith("Windows"))
-			{
+						+ "\nCould not locate the Phidget C library."
+						+ "\nThe Windows Phidget21 MSI must be installed.");
+			} else if (os.startsWith("Mac")) {
 				throw new ExceptionInInitializerError(ex.getMessage()
-				+"\nCould not locate the Phidget C library."
-				+"\nThe Windows Phidget21 MSI must be installed.");
-			}
-			else if(os.startsWith("Mac"))
-			{
+						+ "\nCould not locate the Phidget C library."
+						+ "\nThe Mac Phidget21 DMG must be installed.");
+			} else {
 				throw new ExceptionInInitializerError(ex.getMessage()
-				+"\nCould not locate the Phidget C library."
-				+"\nThe Mac Phidget21 DMG must be installed.");
-			}
-			else
-			{
-				throw new ExceptionInInitializerError(ex.getMessage()
-				+"\nCould not locate the Phidget C library.");
+						+ "\nCould not locate the Phidget C library.");
 			}
 		}
 	}
@@ -77,38 +67,38 @@ public class DictionaryKeyListener
 	public long listenerhandle = 0;
 
 	/**
-	 * Start this key listener. This method should not be called until the coresponding dictionary is connected.
+	 * Start this key listener. This method should not be called until the
+	 * coresponding dictionary is connected.
 	 */
-	public void start() throws PhidgetException
-	{
+	public void start() throws PhidgetException {
 		this.handle = dict.handle;
 		if (handle == 0)
-			throw (new PhidgetException(5, "Dictionary is not attached - call open first"));
-		listenerhandle = enableDictionaryKeyEvents((keyChangeListeners.size() > 0) || (keyRemovalListeners.size() > 0), pattern);
+			throw (new PhidgetException(5,
+					"Dictionary is not attached - call open first"));
+		listenerhandle = enableDictionaryKeyEvents(
+				(keyChangeListeners.size() > 0)
+						|| (keyRemovalListeners.size() > 0), pattern);
 	}
 
 	/**
 	 * Stop this key listener.
 	 */
-	public void stop()
-	{
+	public void stop() {
 		listenerhandle = enableDictionaryKeyEvents(false, pattern);
 	}
 
 	/**
 	 * Returns the Dictionary object that this listener is listening on.
 	 */
-	public Dictionary getDictionary()
-	{
+	public Dictionary getDictionary() {
 		return dict;
 	}
 
 	/**
-	 * Creates a new key listener, for a specific pattern, on a specific dictionary object.
-	 * The pattern is a regular expression.
+	 * Creates a new key listener, for a specific pattern, on a specific
+	 * dictionary object. The pattern is a regular expression.
 	 */
-	public DictionaryKeyListener(Dictionary dict, String pattern)
-	{
+	public DictionaryKeyListener(Dictionary dict, String pattern) {
 		this.pattern = pattern;
 		this.dict = dict;
 		this.handle = dict.handle;
@@ -118,36 +108,34 @@ public class DictionaryKeyListener
 	private long nativeKeyChangeHandler = 0;
 
 	/**
-	 * Add a new listener for key change events. This also applies for key add events..
+	 * Add a new listener for key change events. This also applies for key add
+	 * events..
 	 */
-	public final void addKeyChangeListener(KeyChangeListener l)
-	{
-		synchronized (keyChangeListeners)
-		{
+	public final void addKeyChangeListener(KeyChangeListener l) {
+		synchronized (keyChangeListeners) {
 			keyChangeListeners.add(l);
-			//enableDictionaryKeyEvents(true, pattern);
+			// enableDictionaryKeyEvents(true, pattern);
 		}
 	}
+
 	/**
 	 * Removes a key change listener.
 	 */
-	public final void removeKeyChangeListener(KeyChangeListener l)
-	{
-		synchronized (keyChangeListeners)
-		{
+	public final void removeKeyChangeListener(KeyChangeListener l) {
+		synchronized (keyChangeListeners) {
 			keyChangeListeners.remove(l);
-			//enableDictionaryKeyEvents(keyChangeListeners.size() > 0, pattern);
+			// enableDictionaryKeyEvents(keyChangeListeners.size() > 0,
+			// pattern);
 		}
 	}
-	private void fireKeyChange(KeyChangeEvent e)
-	{
-		synchronized (keyChangeListeners)
-		{
-			for (Iterator it = keyChangeListeners.iterator();
-			  it.hasNext(); )
-				((KeyChangeListener)it.next()).keyChanged(e);
+
+	private void fireKeyChange(KeyChangeEvent e) {
+		synchronized (keyChangeListeners) {
+			for (Iterator it = keyChangeListeners.iterator(); it.hasNext();)
+				((KeyChangeListener) it.next()).keyChanged(e);
 		}
 	}
+
 	private native long enableDictionaryKeyEvents(boolean b, String pattern);
 
 	private LinkedList keyRemovalListeners = new LinkedList();
@@ -156,45 +144,39 @@ public class DictionaryKeyListener
 	/**
 	 * Add a new listener for key removal events.
 	 */
-	public final void addKeyRemovalListener(KeyRemovalListener l)
-	{
-		synchronized (keyRemovalListeners)
-		{
+	public final void addKeyRemovalListener(KeyRemovalListener l) {
+		synchronized (keyRemovalListeners) {
 			keyRemovalListeners.add(l);
-			//enableDictionaryKeyEvents(true, pattern);
+			// enableDictionaryKeyEvents(true, pattern);
 		}
 	}
+
 	/**
 	 * removes a key removal listener.
 	 */
-	public final void removeKeyRemovalListener(KeyRemovalListener l)
-	{
-		synchronized (keyRemovalListeners)
-		{
+	public final void removeKeyRemovalListener(KeyRemovalListener l) {
+		synchronized (keyRemovalListeners) {
 			keyRemovalListeners.remove(l);
-			//enableDictionaryKeyEvents(keyRemovalListeners.size() > 0, pattern);
+			// enableDictionaryKeyEvents(keyRemovalListeners.size() > 0,
+			// pattern);
 		}
 	}
-	private void fireKeyRemoval(KeyRemovalEvent e)
-	{
-		synchronized (keyRemovalListeners)
-		{
-			for (Iterator it = keyRemovalListeners.iterator();
-			  it.hasNext(); )
-				((KeyRemovalListener)it.next()).keyRemoved(e);
+
+	private void fireKeyRemoval(KeyRemovalEvent e) {
+		synchronized (keyRemovalListeners) {
+			for (Iterator it = keyRemovalListeners.iterator(); it.hasNext();)
+				((KeyRemovalListener) it.next()).keyRemoved(e);
 		}
 	}
 
 	/**
 	 * Return a Sring describing this dictionary key listener.
 	 */
-	public String toString()
-	{
-		return dict.toString() + "Dictionary Key Listener ("+pattern+"): ";
+	public String toString() {
+		return dict.toString() + "Dictionary Key Listener (" + pattern + "): ";
 	}
 
-	protected void finalize()
-	{
+	protected void finalize() {
 		listenerhandle = enableDictionaryKeyEvents(false, pattern);
 	}
 }

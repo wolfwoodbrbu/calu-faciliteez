@@ -28,30 +28,33 @@ import com.phidgets.IRCode;
  * 
  * @author Phidgets Inc.
  */
-public class CodeEvent
-{
+public class CodeEvent {
 	Phidget source;
 	IRCode code;
 	boolean repeat;
 
 	/**
-	 * Class constructor. This is called internally by the phidget library when creating this event.
+	 * Class constructor. This is called internally by the phidget library when
+	 * creating this event.
 	 * 
-	 * @param source the Phidget object from which this event originated
-	 * @param code the IR code
-	 * @param repeat whether the code is a repeat
+	 * @param source
+	 *            the Phidget object from which this event originated
+	 * @param code
+	 *            the IR code
+	 * @param repeat
+	 *            whether the code is a repeat
 	 */
-	public CodeEvent(Phidget source, IRCode code, boolean repeat)
-	{
+	public CodeEvent(Phidget source, IRCode code, boolean repeat) {
 		this.source = source;
 		this.code = code;
 		this.repeat = repeat;
 	}
 
 	/**
-	 * Returns the source Phidget of this event. This is a reference to the Phidget object from which this
-	 * event was called. This object can be cast into a specific type of Phidget object to call specific
-	 * device calls on it.
+	 * Returns the source Phidget of this event. This is a reference to the
+	 * Phidget object from which this event was called. This object can be cast
+	 * into a specific type of Phidget object to call specific device calls on
+	 * it.
 	 * 
 	 * @return the event caller
 	 */
@@ -83,7 +86,6 @@ public class CodeEvent
 	 * @return an informative event string
 	 */
 	public String toString() {
-		return source.toString() + " Code: "
-		  + code.toString();
+		return source.toString() + " Code: " + code.toString();
 	}
 }

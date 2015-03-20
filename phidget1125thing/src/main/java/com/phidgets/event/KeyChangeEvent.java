@@ -27,28 +27,29 @@ import com.phidgets.Dictionary;
  * 
  * @author Dictionarys Inc.
  */
-public class KeyChangeEvent
-{
+public class KeyChangeEvent {
 	Dictionary source;
 	String value;
 	String key;
 
 	/**
-	 * Class constructor. This is called internally by the Dictionary library when creating this event.
+	 * Class constructor. This is called internally by the Dictionary library
+	 * when creating this event.
 	 * 
-	 * @param source the Dictionary object from which this event originated
+	 * @param source
+	 *            the Dictionary object from which this event originated
 	 */
-	public KeyChangeEvent(Dictionary source, String key, String value)
-	{
+	public KeyChangeEvent(Dictionary source, String key, String value) {
 		this.source = source;
 		this.value = value;
 		this.key = key;
 	}
 
 	/**
-	 * Returns the source Dictionary of this event. This is a reference to the Dictionary object from which this
-	 * event was called. This object can be cast into a specific type of Dictionary object to call specific
-	 * device calls on it.
+	 * Returns the source Dictionary of this event. This is a reference to the
+	 * Dictionary object from which this event was called. This object can be
+	 * cast into a specific type of Dictionary object to call specific device
+	 * calls on it.
 	 * 
 	 * @return the event caller
 	 */
@@ -56,13 +57,11 @@ public class KeyChangeEvent
 		return source;
 	}
 
-	public String getKey()
-	{
+	public String getKey() {
 		return key;
 	}
 
-	public String getValue()
-	{
+	public String getValue() {
 		return value;
 	}
 
@@ -71,9 +70,7 @@ public class KeyChangeEvent
 	 * 
 	 * @return an informative event string
 	 */
-	public String toString()
-	{
-		return source.toString() + " Key changed: "
-		  + key + ":" + value;
+	public String toString() {
+		return source.toString() + " Key changed: " + key + ":" + value;
 	}
 }

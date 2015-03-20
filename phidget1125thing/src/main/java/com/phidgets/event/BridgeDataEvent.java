@@ -27,16 +27,17 @@ import com.phidgets.Phidget;
  * 
  * @author Phidgets Inc.
  */
-public class BridgeDataEvent
-{
+public class BridgeDataEvent {
 	Phidget source;
 	int index;
 	double value;
 
 	/**
-	 * Class constructor. This is called internally by the phidget library when creating this event.
+	 * Class constructor. This is called internally by the phidget library when
+	 * creating this event.
 	 * 
-	 * @param source the Phidget object from which this event originated
+	 * @param source
+	 *            the Phidget object from which this event originated
 	 */
 	public BridgeDataEvent(Phidget source, int index, double value) {
 		this.source = source;
@@ -45,9 +46,10 @@ public class BridgeDataEvent
 	}
 
 	/**
-	 * Returns the source Phidget of this event. This is a reference to the Phidget object from which this
-	 * event was called. This object can be cast into a specific type of Phidget object to call specific
-	 * device calls on it.
+	 * Returns the source Phidget of this event. This is a reference to the
+	 * Phidget object from which this event was called. This object can be cast
+	 * into a specific type of Phidget object to call specific device calls on
+	 * it.
 	 * 
 	 * @return the event caller
 	 */
@@ -80,6 +82,6 @@ public class BridgeDataEvent
 	 */
 	public String toString() {
 		return source.toString() + " bridge " + index + " value changed to "
-		  + value;
+				+ value;
 	}
 }

@@ -27,29 +27,28 @@ import com.phidgets.Phidget;
  * 
  * @author Phidgets Inc.
  */
-public class ServerDisconnectEvent
-{
+public class ServerDisconnectEvent {
 	Object source;
 
 	/**
-	 * Class constructor. This is called internally by the phidget library when creating this event.
+	 * Class constructor. This is called internally by the phidget library when
+	 * creating this event.
 	 * 
-	 * @param source the object from which this event originated
+	 * @param source
+	 *            the object from which this event originated
 	 */
-	public ServerDisconnectEvent(Object source)
-	{
+	public ServerDisconnectEvent(Object source) {
 		this.source = source;
 	}
 
 	/**
-	 * Returns the source Object of this event. This is a reference to the object from which this
-	 * event was called. This object can be cast into a specific type of object to call specific
-	 * device calls on it.
+	 * Returns the source Object of this event. This is a reference to the
+	 * object from which this event was called. This object can be cast into a
+	 * specific type of object to call specific device calls on it.
 	 * 
 	 * @return the event caller
 	 */
-	public Object getSource()
-	{
+	public Object getSource() {
 		return source;
 	}
 

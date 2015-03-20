@@ -27,16 +27,17 @@ import com.phidgets.Phidget;
  * 
  * @author Phidgets Inc.
  */
-public class CurrentChangeEvent
-{
+public class CurrentChangeEvent {
 	Phidget source;
 	int index;
 	double value;
 
 	/**
-	 * Class constructor. This is called internally by the phidget library when creating this event.
+	 * Class constructor. This is called internally by the phidget library when
+	 * creating this event.
 	 * 
-	 * @param source the Phidget object from which this event originated
+	 * @param source
+	 *            the Phidget object from which this event originated
 	 */
 	public CurrentChangeEvent(Phidget source, int index, double value) {
 		this.source = source;
@@ -45,9 +46,10 @@ public class CurrentChangeEvent
 	}
 
 	/**
-	 * Returns the source Phidget of this event. This is a reference to the Phidget object from which this
-	 * event was called. This object can be cast into a specific type of Phidget object to call specific
-	 * device calls on it.
+	 * Returns the source Phidget of this event. This is a reference to the
+	 * Phidget object from which this event was called. This object can be cast
+	 * into a specific type of Phidget object to call specific device calls on
+	 * it.
 	 * 
 	 * @return the event caller
 	 */
@@ -65,7 +67,8 @@ public class CurrentChangeEvent
 	}
 
 	/**
-	 * Returns the current of the motor. This is a representation of the ammount of current being used by the motor.
+	 * Returns the current of the motor. This is a representation of the ammount
+	 * of current being used by the motor.
 	 * 
 	 * @return the motor's current draw
 	 */
@@ -79,7 +82,6 @@ public class CurrentChangeEvent
 	 * @return an informative event string
 	 */
 	public String toString() {
-		return source.toString() + " current " + index + " changed to "
-		  + value;
+		return source.toString() + " current " + index + " changed to " + value;
 	}
 }

@@ -27,16 +27,17 @@ import com.phidgets.Phidget;
  * 
  * @author Phidgets Inc.
  */
-public class StepperPositionChangeEvent
-{
+public class StepperPositionChangeEvent {
 	Phidget source;
 	int index;
 	long value;
 
 	/**
-	 * Class constructor. This is called internally by the phidget library when creating this event.
+	 * Class constructor. This is called internally by the phidget library when
+	 * creating this event.
 	 * 
-	 * @param source the Phidget object from which this event originated
+	 * @param source
+	 *            the Phidget object from which this event originated
 	 */
 	public StepperPositionChangeEvent(Phidget source, int index, long value) {
 		this.source = source;
@@ -45,9 +46,10 @@ public class StepperPositionChangeEvent
 	}
 
 	/**
-	 * Returns the source Phidget of this event. This is a reference to the Phidget object from which this
-	 * event was called. This object can be cast into a specific type of Phidget object to call specific
-	 * device calls on it.
+	 * Returns the source Phidget of this event. This is a reference to the
+	 * Phidget object from which this event was called. This object can be cast
+	 * into a specific type of Phidget object to call specific device calls on
+	 * it.
 	 * 
 	 * @return the event caller
 	 */
@@ -65,8 +67,9 @@ public class StepperPositionChangeEvent
 	}
 
 	/**
-	 * Returns the position of the Stepper motor. This is esentially just the last position that the
-	 * Stepper was set to, echoed back from the controller board.
+	 * Returns the position of the Stepper motor. This is esentially just the
+	 * last position that the Stepper was set to, echoed back from the
+	 * controller board.
 	 * 
 	 * @return position of the Stepper
 	 */
@@ -80,7 +83,7 @@ public class StepperPositionChangeEvent
 	 * @return an informative event string
 	 */
 	public String toString() {
-		return source.toString() + " Stepper position " + index + " changed to "
-		  + value;
+		return source.toString() + " Stepper position " + index
+				+ " changed to " + value;
 	}
 }
