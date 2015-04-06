@@ -31,6 +31,7 @@ public abstract class BaseEdgeServer {
 	protected static ConnectedThingClient client;
 	protected static String address;
 	protected static String appKey;
+	protected static String thingName;
 	protected static String simulated;
 
 	/**
@@ -70,9 +71,11 @@ public abstract class BaseEdgeServer {
 		// You must generate an API key within the Thingworx composer and prvide
 		// its value on the command line.
 		appKey = args[1];
+		
+		thingName = args[2];
 
-		if (args.length > 2) {
-			simulated = args[2];
+		if (args.length > 3) {
+			simulated = args[3];
 		}
 
 	}

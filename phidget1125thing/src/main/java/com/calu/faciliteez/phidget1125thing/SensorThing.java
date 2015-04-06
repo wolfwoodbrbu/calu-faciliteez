@@ -10,8 +10,10 @@ import com.phidgets.*;
 import com.phidgets.event.*;
 import com.thingworx.communications.client.ConnectedThingClient;
 import com.thingworx.communications.client.things.VirtualThing;
+import com.thingworx.metadata.PropertyDefinition;
 import com.thingworx.metadata.annotations.ThingworxPropertyDefinition;
 import com.thingworx.metadata.annotations.ThingworxPropertyDefinitions;
+import com.thingworx.types.primitives.BooleanPrimitive;
 import com.thingworx.types.properties.Property;
 import com.thingworx.types.properties.collections.PendingPropertyUpdatesByProperty;
 
@@ -26,10 +28,10 @@ properties = {
 				"dataChangeType:ALWAYS", "dataChangeThreshold:0",
 				"cacheTime:0", "isPersistent:FALSE", "isReadOnly:TRUE",
 				"pushType:VALUE", "defaultValue:0" }),
-		@ThingworxPropertyDefinition(name = "P1125_TempScale", description = "Which Temperature Scale do we want.", baseType = "STRING", aspects = {
-				"dataChangeType:ALWAYS", "dataChangeThreshold:0",
+		@ThingworxPropertyDefinition(name = "SimProblem", description = "If we want to simulate a problem", baseType = "BOOLEAN", aspects = {
+				"dataChangeType:VALUE", "dataChangeThreshold:0",
 				"cacheTime:0", "isPersistent:TRUE", "isReadOnly:FALSE",
-				"pushType:VALUE", "defaultValue:F" }), })
+				"pushType:VALUE", "defaultValue:false" }) })
 public class SensorThing extends VirtualThing {
 
 	/**
@@ -43,6 +45,10 @@ public class SensorThing extends VirtualThing {
 	private final String simulated;
 	private final ConnectedThingClient client;
 	public InterfaceKitPhidget ik;
+
+	private DataSimulator temperatureSimData;
+	private DataSimulator humiditySimData;
+	private Boolean SimulateProblem = false;
 
 	/**
 	 * @param name
@@ -63,13 +69,14 @@ public class SensorThing extends VirtualThing {
 		try {
 			setDefaultPropertyValue("P1125_Temp");
 			setDefaultPropertyValue("P1125_RH");
-			setDefaultPropertyValue("P1125_TempScale");
 		} catch (Exception localException) {
 			LOG.error("Failed to set default value.", localException);
 		}
 
 		if (simulated != null && simulated.equals("simulated")) {
 			LOG.debug("Simulating data!");
+			temperatureSimData = new DataSimulator(1, 380, 365, 375);
+			humiditySimData = new DataSimulator(2, 369, 315, 342);
 		} else {
 			ik = new InterfaceKitPhidget();
 			ik.addAttachListener(new AttachListener() {
@@ -92,17 +99,17 @@ public class SensorThing extends VirtualThing {
 	public void processScanRequest() throws Exception {
 		super.processScanRequest();
 
-		PendingPropertyUpdatesByProperty pu = getPendingPropertyUpdates();
-		Property Scale = getProperty("P1125_TempScale");
-		String TempScale = Scale.getValue().getStringValue();
-		LOG.debug("P1125_TempScale = " + TempScale);
-		Double currentTemperatureF = getTemperature(TempScale);
+		Double currentTemperatureF = getTemperature("F");
 		Double currentHumidity = getHumidity();
-		LOG.debug("P1125_Temp " + "= " + currentTemperatureF);
-		LOG.debug("P1125_RH   " + "= " + currentHumidity);
+		LOG.info("P1125_Temp " + "= " + currentTemperatureF);
+		LOG.info("P1125_RH   " + "= " + currentHumidity);
 		setProperty("P1125_Temp", currentTemperatureF);
 		setProperty("P1125_RH", currentHumidity);
 		updateSubscribedProperties(2000);
+		if (simulated != null && simulated.equals("simulated")) {
+			SimulateProblem = ((BooleanPrimitive) getProperty("SimProblem").getValue()).getValue();
+			LOG.info("SimProblem " + "= " + SimulateProblem.toString());
+		}
 
 	}
 
@@ -113,7 +120,7 @@ public class SensorThing extends VirtualThing {
 		BigDecimal humidity = new BigDecimal(0);
 
 		if (simulated != null && simulated.equals("simulated")) {
-			sensorValue = 319;
+			sensorValue = humiditySimData.getNewValue();
 		} else {
 			sensorValue = getSensorValue(1);
 		}
@@ -134,7 +141,7 @@ public class SensorThing extends VirtualThing {
 		BigDecimal temperature = new BigDecimal(0);
 
 		if (simulated != null && simulated.equals("simulated")) {
-			sensorValue = 319;
+			sensorValue = temperatureSimData.getNewValue();
 		} else {
 			sensorValue = getSensorValue(0);
 		}
