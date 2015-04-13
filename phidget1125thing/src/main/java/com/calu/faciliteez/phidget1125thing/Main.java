@@ -3,13 +3,17 @@ package com.calu.faciliteez.phidget1125thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.qos.logback.classic.Level;
+
 public class Main extends BaseEdgeServer {
 	private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 	public static final String THING_NAME = "-p1125-thing";
 	public static final String THING_DESCRIPTION = "Phidget RH and Tempature Sensor";
+	private static final Level INFO = ch.qos.logback.classic.Level.INFO;
+	private static final Level DEBUG = ch.qos.logback.classic.Level.DEBUG;
 
 	public static void main(String[] args) {
-		setLoggingLevel(ch.qos.logback.classic.Level.INFO);
+		setLoggingLevel(DEBUG);
 		try {
 			parseArguments(args);
 			client = getEdgeClient();

@@ -29,9 +29,9 @@ properties = {
 				"cacheTime:0", "isPersistent:FALSE", "isReadOnly:TRUE",
 				"pushType:VALUE", "defaultValue:0" }),
 		@ThingworxPropertyDefinition(name = "SimProblem", description = "If we want to simulate a problem", baseType = "BOOLEAN", aspects = {
-				"dataChangeType:VALUE", "dataChangeThreshold:0",
-				"cacheTime:0", "isPersistent:TRUE", "isReadOnly:FALSE",
-				"pushType:VALUE", "defaultValue:false" }) })
+				"dataChangeType:ALWAYS", "dataChangeThreshold:0",
+				"cacheTime:0", "isPersistent:FALSE", "isReadOnly:FALSE",
+				"pushType:VALUE", "defaultValue:false" }), })
 public class SensorThing extends VirtualThing {
 
 	/**
@@ -58,7 +58,7 @@ public class SensorThing extends VirtualThing {
 	 * @throws PhidgetException
 	 */
 	public SensorThing(String name, String description, String simulated,
-			ConnectedThingClient client) throws Exception {
+			ConnectedThingClient client) {
 		super(name, description, client);
 		this.name = name;
 		this.description = description;
@@ -69,47 +69,66 @@ public class SensorThing extends VirtualThing {
 		try {
 			setDefaultPropertyValue("P1125_Temp");
 			setDefaultPropertyValue("P1125_RH");
+			setDefaultPropertyValue("SimProblem");
 		} catch (Exception localException) {
 			LOG.error("Failed to set default value.", localException);
 		}
 
 		if (simulated != null && simulated.equals("simulated")) {
-			LOG.debug("Simulating data!");
+			LOG.info("Simulating data!");
 			temperatureSimData = new DataSimulator(1, 380, 365, 375);
 			humiditySimData = new DataSimulator(2, 369, 315, 342);
 		} else {
-			ik = new InterfaceKitPhidget();
-			ik.addAttachListener(new AttachListener() {
-				public void attached(AttachEvent ae) {
-					LOG.debug("[Attachment]: " + ae);
-				}
-			});
-			ik.openAny();
-			LOG.debug("Waiting for InterfaceKit attachment...");
-			ik.waitForAttachment();
-			LOG.debug(ik.getDeviceName());
+			try {
+				ik = new InterfaceKitPhidget();
+				ik.addAttachListener(new AttachListener() {
+					public void attached(AttachEvent ae) {
+						LOG.debug("[Attachment]: " + ae);
+					}
+				});
+				ik.openAny();
+				LOG.debug("Waiting for InterfaceKit attachment...");
+				ik.waitForAttachment();
+				LOG.debug(ik.getDeviceName());
 
-			Thread.sleep(500);
+				Thread.sleep(500);
+			} catch (PhidgetException | InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 		}
 
 	}
 
 	@Override
-	public void processScanRequest() throws Exception {
-		super.processScanRequest();
+	public void processScanRequest() {
+		try {
+			super.processScanRequest();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		Double currentTemperatureF = getTemperature("F");
 		Double currentHumidity = getHumidity();
 		LOG.info("P1125_Temp " + "= " + currentTemperatureF);
 		LOG.info("P1125_RH   " + "= " + currentHumidity);
-		setProperty("P1125_Temp", currentTemperatureF);
-		setProperty("P1125_RH", currentHumidity);
-		updateSubscribedProperties(2000);
-		if (simulated != null && simulated.equals("simulated")) {
-			SimulateProblem = ((BooleanPrimitive) getProperty("SimProblem").getValue()).getValue();
-			LOG.info("SimProblem " + "= " + SimulateProblem.toString());
+		try {
+			setProperty("P1125_Temp", currentTemperatureF);
+			setProperty("P1125_RH", currentHumidity);
+			updateSubscribedProperties(2000);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
+		/*
+		 * if (simulated != null && simulated.equals("simulated")) {
+		 * SimulateProblem = ((BooleanPrimitive)
+		 * getProperty("SimProblem").getValue()).getValue();
+		 * LOG.info("SimProblem " + "= " + SimulateProblem.toString()); }
+		 */
 
 	}
 
@@ -124,6 +143,7 @@ public class SensorThing extends VirtualThing {
 		} else {
 			sensorValue = getSensorValue(1);
 		}
+		LOG.debug("RH Raw Value: " + sensorValue);
 		humidity = new BigDecimal(sensorValue);
 
 		humidity = humidity.multiply(HUMIDITY_TRANLATE_1);
@@ -145,6 +165,7 @@ public class SensorThing extends VirtualThing {
 		} else {
 			sensorValue = getSensorValue(0);
 		}
+		LOG.debug("Temp Raw Value: " + sensorValue);
 		temperature = new BigDecimal(sensorValue);
 
 		temperature = temperature.multiply(TEMPERATURE_TRANSLATE_1);
