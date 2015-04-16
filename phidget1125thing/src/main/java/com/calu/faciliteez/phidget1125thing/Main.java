@@ -13,7 +13,7 @@ public class Main extends BaseEdgeServer {
 	private static final Level DEBUG = ch.qos.logback.classic.Level.DEBUG;
 
 	public static void main(String[] args) {
-		setLoggingLevel(DEBUG);
+		setLoggingLevel(INFO);
 		try {
 			parseArguments(args);
 			client = getEdgeClient();

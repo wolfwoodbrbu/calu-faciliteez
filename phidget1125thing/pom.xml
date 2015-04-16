@@ -23,10 +23,16 @@
         <applicationKey>e8aa5e4e-0dfb-4921-9957-22a60e7ddb71</applicationKey>
 
         <!-- Replace raspberrypi with the hostname or ip address of your raspberry pi -->
-        <pi.deployment.url>scp://pi@76.125.168.99:22/home/pi</pi.deployment.url>
+        <!-- When not at home -->
+		<pi.deployment.url>scp://pi@76.125.168.99:22/home/pi</pi.deployment.url>
+        
+        <!-- When at home -->
+<!--         <pi.deployment.url>scp://pi@10.0.0.36:22/home/pi</pi.deployment.url> -->
+        
 
         <!-- Change to no or empty to use real hardware -->
-        <simulated>simulated</simulated>
+        <simulated></simulated>
+        <sensor.name>rpi-1</sensor.name>
     </properties>
 
     <!-- This section adds the maven repository that contains the Thingworx jar -->
@@ -150,6 +156,7 @@
                     <arguments>
                         <argument>${thingworxServer}</argument>
                         <argument>${applicationKey}</argument>
+                        <argument>${sensor.name}</argument>
                         <argument>${simulated}</argument>
                     </arguments>
                 </configuration>
