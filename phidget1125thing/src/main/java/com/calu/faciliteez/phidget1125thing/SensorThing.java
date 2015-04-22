@@ -35,19 +35,71 @@ import com.thingworx.types.properties.Property;
  */
 public class SensorThing extends VirtualThing {
 
-	private static final long			serialVersionUID	= 7413736479873474805L;
-	private static final Logger			LOG					= LoggerFactory.getLogger(Main.class);
+	private static final long			serialVersionUID		= 7413736479873474805L;
+	/**
+	 * Main Class's Logger
+	 */
+	private static final Logger			LOG						= LoggerFactory.getLogger(Main.class);
 
+	/**
+	 * The name of this thing
+	 */
 	private final String				name;
+	/**
+	 * The description of this thing
+	 */
 	private final String				description;
+	/**
+	 * A string that contains the 4th argument of the program
+	 */
 	private final String				simulated;
+	/**
+	 * The Micro Edge Client
+	 */
 	private final ConnectedThingClient	client;
-	private InterfaceKitPhidget			ik					= null;
-	private final int					TEMP_INDEX			= 0;
-	private final int					RH_INDEX			= 1;
+	/**
+	 * The Phidget InterfaceKit this thing will use
+	 */
+	private InterfaceKitPhidget			ik						= null;
+	/**
+	 * The index of where the Temperature Sensor is plugged into the
+	 * InterfaceKit
+	 */
+	private final int					TEMP_INDEX				= 0;
+	/**
+	 * The index of where the Humidity Sensor is plugged into the InterfaceKit
+	 */
+	private final int					RH_INDEX				= 1;
 
-	private DataSimulator				temperatureSimData	= null;
-	private DataSimulator				humiditySimData		= null;
+	/**
+	 * A DataSimulator for our simulated Temperature
+	 */
+	private DataSimulator				temperatureSimData		= null;
+	/**
+	 * A DataSimulator for our simulated Humidity
+	 */
+	private DataSimulator				humiditySimData			= null;
+
+	/**
+	 * A constant we have to multiply the temperature sensor value by to convert
+	 * it to celsius temperature scale
+	 */
+	final BigDecimal					TEMPERATURE_TRANSLATE_1	= new BigDecimal(0.22222);
+	/**
+	 * A constant we have to subtract from the converted value to shift it to
+	 * the real temperature in celsuis
+	 */
+	final BigDecimal					TEMPERATURE_TRANSLATE_2	= new BigDecimal(61.11);
+	/**
+	 * A constant we have to multiply the humidity sensor value by to convert it
+	 * to a percentage
+	 */
+	final BigDecimal					HUMIDITY_TRANLATE_1		= new BigDecimal(0.1906);
+	/**
+	 * A constant we have to subtract from the converted value to shift it to
+	 * the real percentage
+	 */
+	final BigDecimal					HUMIDITY_TRANLATE_2		= new BigDecimal(40.2);
 
 	/**
 	 * Constructor for SensorThing. All four parameters are brought in incase
@@ -63,17 +115,22 @@ public class SensorThing extends VirtualThing {
 	 *            The client connection to ThingWorx
 	 */
 	public SensorThing(String name, String description, String simulated, ConnectedThingClient client) {
+		// Initialize member variables
 		super(name, description, client);
 		this.name = name;
 		this.description = description;
 		this.simulated = simulated;
 		this.client = client;
 
+		// Create new property definitions for both the Temprature and Humidity
 		PropertyDefinition P1125_RH = new PropertyDefinition("P1125_RH", "The current relative humidity of the Phidget 1125 sensor", BaseTypes.NUMBER);
 		PropertyDefinition P1125_Temp = new PropertyDefinition("P1125_Temp", "The current temperature of the Phidget 1125 sensor", BaseTypes.NUMBER);
 
+		// This holds the aspects we will apply to our Temperature and Humidity
+		// properties
 		AspectCollection aspects = new AspectCollection();
 
+		// Add our aspects to the aspects variable
 		aspects.put(Aspects.ASPECT_DATACHANGETYPE, new StringPrimitive(DataChangeType.ALWAYS.name()));
 		aspects.put(Aspects.ASPECT_DATACHANGETHRESHOLD, new NumberPrimitive(0.0));
 		aspects.put(Aspects.ASPECT_CACHETIME, new IntegerPrimitive(-1));
@@ -84,14 +141,19 @@ public class SensorThing extends VirtualThing {
 
 		LOG.debug(aspects.toString());
 
+		// Add the aspects to the Temp and Humidity properties
 		P1125_RH.setAspects(aspects);
 		P1125_Temp.setAspects(aspects);
 
+		// Add the Temperature and Humidity properties to this Thing
 		this.defineProperty(P1125_RH);
 		this.defineProperty(P1125_Temp);
 
+		// Adds any other Thing properties/services that are defined by
+		// annotations
 		initializeFromAnnotations();
 
+		// If we are simulating data initialize our DataSimulators
 		if (simulated != null && simulated.equals("simulated")) {
 			LOG.info("{}: Simulating data!", name);
 			temperatureSimData = new DataSimulator(1, 380, 365, 375);
@@ -99,6 +161,7 @@ public class SensorThing extends VirtualThing {
 
 		}
 		else {
+			// Else connect to our InterfaceKit
 			try {
 				ik = new InterfaceKitPhidget();
 				ik.addAttachListener(new AttachListener() {
@@ -113,8 +176,8 @@ public class SensorThing extends VirtualThing {
 
 				Thread.sleep(500);
 
-				ik.setSensorChangeTrigger(0, 1);
-				ik.setSensorChangeTrigger(1, 1);
+				ik.setSensorChangeTrigger(TEMP_INDEX, 2);
+				ik.setSensorChangeTrigger(RH_INDEX, 2);
 			}
 			catch (PhidgetException | InterruptedException e) {
 				LOG.error("Something went wrong connecting to the InterfaceKit", e);
@@ -157,6 +220,39 @@ public class SensorThing extends VirtualThing {
 	}
 
 	/**
+	 * This allows ThingWorx to change what Humidity values are being simulated
+	 * for this thing. This remote service is defined in the ThingShape in
+	 * ThingWorx so all of the Things defined by that shape can access this
+	 * service. (2, 369, 315, 342);
+	 * 
+	 * @param target
+	 *            Target Value you want the Data Simulator(DS) to go to. Default
+	 *            342 (24.99%)
+	 * @param max
+	 *            Max Value you want the DS to go to. Default 369 (30.13%)
+	 * @param min
+	 *            Min Value you want the DS to go to. Default 315 (19.84%)
+	 * @param rate
+	 *            The max rate in which the DS can change the Temp. Default 2
+	 * @throws Exception
+	 */
+	@ThingworxServiceDefinition(name = "SetSimulationHumidityRange", description = "Sets the Humidity Range the Data Simulator Simulates at.")
+	@ThingworxServiceResult(name = CommonPropertyNames.PROP_RESULT, description = "", baseType = "NOTHING")
+	public void SetSimulationHumidityRange(
+		@ThingworxServiceParameter(name = "Target", description = "Target Value you want the Data Simulator(DS) to go to. Default 342 (24.99%)", baseType = "INTEGER")
+		Integer target, @ThingworxServiceParameter(name = "Max", description = "Max Value you want the DS to go to. Default 369 (30.13%)", baseType = "INTEGER")
+		Integer max, @ThingworxServiceParameter(name = "Min", description = "Min Value you want the DS to go to. Default 315 (19.84%)", baseType = "INTEGER")
+		Integer min, @ThingworxServiceParameter(name = "Rate", description = "The max rate in which the DS can change the Temp. Default 2", baseType = "INTEGER")
+		Integer rate) throws Exception {
+		if (humiditySimData != null) {
+			humiditySimData.ChangeTarget(target, rate, min, max);
+		}
+		else {
+			LOG.info("{}: Data Simulator not being used or not ready", name);
+		}
+	}
+
+	/**
 	 * This is the function that is run everytime the base edge server loops. It
 	 * retrieves the sensor data and sends it to ThingWorx
 	 */
@@ -169,12 +265,15 @@ public class SensorThing extends VirtualThing {
 			LOG.error("Error in super.processScanRequest", e);
 		}
 
+		// Get the new values for the Temperature and humidity
 		Double currentTemperatureF = getTemperature("F");
 		Double currentHumidity = getHumidity();
 
 		LOG.info("{}: P1125_Temp = {}", name, currentTemperatureF);
 		LOG.info("{}: P1125_RH   = {}", name, currentHumidity);
 		try {
+			// Try to set the new property values and send them to the ThingWorx
+			// server
 			setProperty("P1125_Temp", currentTemperatureF);
 			setProperty("P1125_RH", currentHumidity);
 			updateSubscribedProperties(2000);
@@ -192,25 +291,30 @@ public class SensorThing extends VirtualThing {
 	 * @return The translated humidity value
 	 */
 	private Double getHumidity() {
-		final BigDecimal HUMIDITY_TRANLATE_1 = new BigDecimal(0.1906);
-		final BigDecimal HUMIDITY_TRANLATE_2 = new BigDecimal(40.2);
 		int sensorValue = 0;
-		BigDecimal humidity = new BigDecimal(0);
+		// We are using BigDecimal for more accurate calculations.
+		BigDecimal humidity = null;
 
 		if (simulated != null && simulated.equals("simulated")) {
+			// If we're simulating data get a new value from the data simulator.
 			sensorValue = humiditySimData.getNewValue();
 		}
 		else {
+			// else get the new value from the Humidity Sensor
 			sensorValue = getSensorValue(RH_INDEX);
 		}
 		LOG.debug("RH Raw Value: {}", sensorValue);
+		// convert the sensor value into a BigDecimal
 		humidity = new BigDecimal(sensorValue);
-
+		
+		// do our calculation on the data
 		humidity = humidity.multiply(HUMIDITY_TRANLATE_1);
 		humidity = humidity.subtract(HUMIDITY_TRANLATE_2);
-
+		
+		// round the value to 2 decimal places
 		humidity = round(humidity, 2);
-
+		
+		// return this value as a double
 		return humidity.doubleValue();
 	}
 
@@ -223,10 +327,11 @@ public class SensorThing extends VirtualThing {
 	 * @return The translated temperature value
 	 */
 	private Double getTemperature(String Scale) {
-		final BigDecimal TEMPERATURE_TRANSLATE_1 = new BigDecimal(0.22222);
-		final BigDecimal TEMPERATURE_TRANSLATE_2 = new BigDecimal(61.11);
 		int sensorValue = 0;
-		BigDecimal temperature = new BigDecimal(0);
+		// everything is like getHumidity except for if Scale is "F" 
+		// we do additional calculations to the value to convert
+		// the celsius value to ferinheight
+		BigDecimal temperature = null;
 
 		if (simulated != null && simulated.equals("simulated")) {
 			sensorValue = temperatureSimData.getNewValue();
@@ -240,6 +345,7 @@ public class SensorThing extends VirtualThing {
 		temperature = temperature.multiply(TEMPERATURE_TRANSLATE_1);
 		temperature = temperature.subtract(TEMPERATURE_TRANSLATE_2);
 
+		// convert to F
 		if (Scale.equals("F")) {
 			temperature = temperature.multiply(new BigDecimal(9));
 			temperature = temperature.divide(new BigDecimal(5));
@@ -254,8 +360,8 @@ public class SensorThing extends VirtualThing {
 	/**
 	 * Asks the Interface Kit for the sensor value at the given Index
 	 * 
-	 * @param index
-	 * @return
+	 * @param index The index at which the sensor is aton the InterfaceKit
+	 * @return The value from the sensor
 	 */
 	private int getSensorValue(int index) {
 		int sensorValue = 0;
@@ -277,6 +383,7 @@ public class SensorThing extends VirtualThing {
 	 * @param propertyName
 	 * @throws Exception
 	 */
+	@Deprecated
 	protected void setDefaultPropertyValue(String propertyName) throws Exception {
 		Property p = getProperty(propertyName);
 		PropertyDefinition d = p.getPropertyDefinition();
@@ -286,8 +393,8 @@ public class SensorThing extends VirtualThing {
 	}
 
 	/**
-	 * Rounds the given BigDecimal Value to the given Places Throws an
-	 * exception if the places is set to anything less then 0
+	 * Rounds the given BigDecimal Value to the given Places Throws an exception
+	 * if the places is set to anything less then 0
 	 * 
 	 * @param value
 	 * @param places

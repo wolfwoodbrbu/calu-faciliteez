@@ -12,27 +12,26 @@ import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
 /**
- * Author: wreichardt
- * Date: 6/13/14
- * Copyright PTC 2014
- */
-
-/**
  * This class simplifies starting an edge server. It manages the command line
  * parameters an the construction of the edge client and monitoring of any
  * Things registered with it.
+ * 
+ * @author wreichardt<br><br>
+ *         Date 6/13/14<br> Copyright PTC 2014<br><br>
+ * 
+ *         Modified slightly by Faye Bickerton for the phidget1125thing project
  */
+
 public abstract class BaseEdgeServer {
-	private static final Logger LOG = LoggerFactory
-			.getLogger(BaseEdgeServer.class);
-	public static final int POLLING_INTERVAL_MILLISECONDS = 10000;
+	private static final Logger				LOG								= LoggerFactory.getLogger(BaseEdgeServer.class);
+	public static final int					POLLING_INTERVAL_MILLISECONDS	= 10000;
 	@SuppressWarnings("restriction")
-	protected static SignalHandler oldSigTERM;
-	protected static ConnectedThingClient client;
-	protected static String address;
-	protected static String appKey;
-	protected static String thingName;
-	protected static String simulated;
+	protected static SignalHandler			oldSigTERM;
+	protected static ConnectedThingClient	client;
+	protected static String					address;
+	protected static String					appKey;
+	protected static String					thingName;
+	protected static String					simulated;
 
 	/**
 	 * Create an edge client configuration that will use the provided API key
@@ -43,8 +42,7 @@ public abstract class BaseEdgeServer {
 	protected static ClientConfigurator getClientConfigurator() {
 		ClientConfigurator config = new ClientConfigurator();
 		config.setUri(address);
-		config.getSecurityClaims().addClaim(RESTAPIConstants.PARAM_APPKEY,
-				appKey);
+		config.getSecurityClaims().addClaim(RESTAPIConstants.PARAM_APPKEY, appKey);
 		config.ignoreSSLErrors(true);
 		return config;
 	}
@@ -56,9 +54,8 @@ public abstract class BaseEdgeServer {
 	 *            command line arguments.
 	 */
 	protected static void parseArguments(String[] args) {
-		if (args.length < 2) {
-			System.out
-					.println("A minimum of two arguments is required. Server Hostname and Application Key. Optionally, if the third argument is 'simulated' then simulated reading will be used instead of real hardware.");
+		if (args.length < 3) {
+			LOG.error("A minimum of two arguments is required. Server Hostname, Application Key, and Unique Thing Name. Optionally, if the fourth argument is 'simulated' then simulated reading will be used instead of real hardware.");
 			System.exit(0);
 		}
 
@@ -71,7 +68,7 @@ public abstract class BaseEdgeServer {
 		// You must generate an API key within the Thingworx composer and prvide
 		// its value on the command line.
 		appKey = args[1];
-		
+
 		thingName = args[2];
 
 		if (args.length > 3) {
@@ -89,8 +86,7 @@ public abstract class BaseEdgeServer {
 	 * @throws Exception
 	 */
 	protected static ConnectedThingClient getEdgeClient() throws Exception {
-		ConnectedThingClient aClient = new ConnectedThingClient(
-				getClientConfigurator(), null);
+		ConnectedThingClient aClient = new ConnectedThingClient(getClientConfigurator(), null);
 
 		attachClientShutdownToSigTerm();
 		return aClient;
@@ -108,7 +104,8 @@ public abstract class BaseEdgeServer {
 					LOG.info("Shutting client down...");
 					client.shutdown();
 					LOG.info("Successfully shut down client.");
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					LOG.error("Failed to properly shutdown client.", e);
 				}
 				if (oldSigTERM != null) {
@@ -124,7 +121,8 @@ public abstract class BaseEdgeServer {
 					LOG.info("Shutting client down...");
 					client.shutdown();
 					LOG.info("Successfully shut down client.");
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					LOG.error("Failed to properly shutdown client.", e);
 				}
 
@@ -147,10 +145,9 @@ public abstract class BaseEdgeServer {
 				for (VirtualThing vt : client.getThings().values()) {
 					try {
 						vt.processScanRequest();
-					} catch (Exception eProcessing) {
-						LOG.error(
-								"Error Processing Scan Request for ["
-										+ vt.getName() + "] ", eProcessing);
+					}
+					catch (Exception eProcessing) {
+						LOG.error("Error Processing Scan Request for [" + vt.getName() + "] ", eProcessing);
 					}
 				}
 			}

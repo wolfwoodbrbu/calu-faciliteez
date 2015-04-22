@@ -42,7 +42,7 @@
         <repository>
             <id>ptc-managed-services-public</id>
             <name>PTC Managed Services Public</name>
-            <url>https://maker01.ptcmanaged.com/mvnrepo</url>
+            <url>https://maker01.cloud.thingworx.com/mvnrepo/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
